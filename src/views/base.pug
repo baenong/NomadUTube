@@ -1,0 +1,12 @@
+doctype html
+html(lang="ko")
+    head
+        title #{pageTitle} | UTube
+        link(rel="stylesheet" href="https://unpkg.com/mvp.css")
+    body
+        header
+            h1=pageTitle
+            //- #{pageTitle}
+        main
+            block content
+    include partials/footer.pug
