@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --exec babel-node src/server.js"
+    "dev": "nodemon --exec babel-node src/init.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   "homepage": "https://github.com/baenong/NomadUTube#readme",
   "dependencies": {
     "express": "^4.18.1",
+    "mongoose": "^6.3.3",
     "morgan": "^1.10.0",
     "pug": "^3.0.2"
   },
