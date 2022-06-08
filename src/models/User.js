@@ -9,8 +9,12 @@ const userSchema = new mongoose.Schema({
   location: String,
 });
 
-userSchema.pre("save", async () => {
-  this.password = await bcrypt.hash(this.password, 5);
+userSchema.pre("save", async function () {
+  try {
+    this.password = await bcrypt.hash(this.password, 5);
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 const User = mongoose.model("User", userSchema);
