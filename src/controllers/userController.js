@@ -169,6 +169,7 @@ export const startKakaoLogin = (req, res) => {
 };
 
 export const finishKakaoLogin = async (req, res) => {
+  const pageTitle = "Login";
   const baseUrl = "https://kauth.kakao.com/oauth/token";
   const config = {
     grant_type: "authorization_code",
@@ -202,8 +203,10 @@ export const finishKakaoLogin = async (req, res) => {
 
     // if userdata is unknown
     if (userToken.msg === "no authentication key!") {
-      console.log(userToken.msg);
-      return res.redirect("/login");
+      return res.render("login", {
+        pageTitle,
+        errorMessage: "no authentication key",
+      });
     }
 
     // request user info
@@ -226,8 +229,10 @@ export const finishKakaoLogin = async (req, res) => {
       kakaoAccount.is_email_valid === false ||
       kakaoAccount.is_email_verified === false
     ) {
-      console.log("email is not valid or verified");
-      return res.redirect("/login");
+      return res.render("login", {
+        pageTitle,
+        errorMessage: "Email is not valid or not verifired",
+      });
     }
 
     let user = await User.findOne({ email: kakaoAccount.email });
@@ -259,6 +264,7 @@ export const getEdit = (req, res) => {
 };
 
 export const postEdit = async (req, res) => {
+  const pageTitle = "Edit Profile";
   const {
     session: {
       user: { _id, username: beforeName, email: beforeEmail, socialOnly },
@@ -269,7 +275,7 @@ export const postEdit = async (req, res) => {
   // Social Login => error
   if (socialOnly && beforeEmail !== email) {
     return res.status(400).render("edit-profile", {
-      pageTitle: "Edit Profile",
+      pageTitle,
       errorMessage: "This ID(Social Login) cannot change email.",
     });
   }
@@ -282,7 +288,7 @@ export const postEdit = async (req, res) => {
   if (searchCondition.length > 0) {
     if (await User.exists({ $or: searchCondition })) {
       return res.status(400).render("edit-profile", {
-        pageTitle: "Edit Profile",
+        pageTitle,
         errorMessage: "This username or email address is already taken.",
       });
     }
