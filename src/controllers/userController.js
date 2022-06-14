@@ -1,5 +1,6 @@
 import User from "../models/User";
 import bcrypt from "bcrypt";
+import fetch from "cross-fetch";
 
 export const getJoin = (req, res) => {
   res.render("join", { pageTitle: "Join" });
@@ -21,7 +22,7 @@ export const postJoin = async (req, res) => {
   if (exists) {
     return res.status(400).render("join", {
       pageTitle,
-      errorMessage: "username or email address is already taken.",
+      errorMessage: "This username or email address is already taken.",
     });
   }
 
@@ -32,6 +33,8 @@ export const postJoin = async (req, res) => {
       password,
       email,
       location,
+      socialOnly: false,
+      avatarUrl: "",
     });
     return res.redirect("/login");
   } catch (error) {
@@ -50,11 +53,11 @@ export const postLogin = async (req, res) => {
   const pageTitle = "Login";
 
   // check if username exist
-  const user = await User.findOne({ username });
+  const user = await User.findOne({ username, socialOnly: false });
   if (!user)
     return res.status(400).render("login", {
       pageTitle,
-      errorMessage: "An Account with thiw username does not exists.",
+      errorMessage: "An Account with this username does not exists.",
     });
 
   // check if password correct
@@ -71,7 +74,233 @@ export const postLogin = async (req, res) => {
   return res.redirect("/");
 };
 
-export const edit = (req, res) => res.send("Edit User");
-export const remove = (req, res) => res.send("Remove User");
-export const logout = (req, res) => res.send("Log out");
+export const startGithubLogin = (req, res) => {
+  const baseUrl = "https://github.com/login/oauth/authorize";
+  const config = {
+    client_id: process.env.GH_CLIENT,
+    allow_signup: false,
+    scope: "read:user user:email",
+  };
+  const params = new URLSearchParams(config).toString();
+  const finalUrl = `${baseUrl}?${params}`;
+
+  return res.redirect(finalUrl);
+};
+
+export const finishGithubLogin = async (req, res) => {
+  const baseUrl = "https://github.com/login/oauth/access_token";
+  const config = {
+    client_id: process.env.GH_CLIENT,
+    client_secret: process.env.GH_SECRET,
+    code: req.query.code,
+  };
+  const params = new URLSearchParams(config).toString();
+  const finalUrl = `${baseUrl}?${params}`;
+
+  const tokenResponse = await (
+    await fetch(finalUrl, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+  ).json();
+
+  if ("access_token" in tokenResponse) {
+    const { access_token } = tokenResponse;
+    const apiUrl = "https://api.github.com";
+    const userData = await (
+      await fetch(`${apiUrl}/user`, {
+        headers: {
+          Authorization: `token ${access_token}`,
+        },
+      })
+    ).json();
+
+    const emailData = await (
+      await fetch(`${apiUrl}/user/emails`, {
+        headers: {
+          Authorization: `token ${access_token}`,
+        },
+      })
+    ).json();
+
+    const emailObj = emailData.find(
+      (email) => email.primary === true && email.verified === true
+    );
+
+    if (!emailObj) {
+      return res.redirect("/login");
+    }
+
+    // verifyied email exist
+    let user = await User.findOne({ email: emailObj.email });
+    if (!user) {
+      //create user
+      user = await User.create({
+        name: userData.name ? userData.name : userData.login,
+        socialOnly: true,
+        username: userData.login,
+        email: emailObj.email,
+        password: "",
+        avatarUrl: userData.avatar_url,
+        location: userData.location,
+      });
+    }
+    req.session.loggedIn = true;
+    req.session.user = user;
+    return res.redirect("/");
+  } else {
+    return res.redirect("/login");
+  }
+};
+
+export const startKakaoLogin = (req, res) => {
+  const baseUrl = "https://kauth.kakao.com/oauth/authorize";
+  const config = {
+    client_id: process.env.KA_CLIENT,
+    redirect_uri: `http://localhost:4000/users/kakao/finish`,
+    response_type: "code",
+  };
+  const params = new URLSearchParams(config).toString();
+  const finalUrl = `${baseUrl}?${params}`;
+
+  return res.redirect(finalUrl);
+};
+
+export const finishKakaoLogin = async (req, res) => {
+  const baseUrl = "https://kauth.kakao.com/oauth/token";
+  const config = {
+    grant_type: "authorization_code",
+    client_id: process.env.KA_CLIENT,
+    redirect_uri: "http://localhost:4000/users/kakao/finish",
+    code: req.query.code,
+  };
+  const params = new URLSearchParams(config).toString();
+  const finalUrl = `${baseUrl}?${params}`;
+
+  const tokenResponse = await (
+    await fetch(finalUrl, {
+      method: "POST",
+    })
+  ).json();
+
+  // if access token exists
+  if ("access_token" in tokenResponse) {
+    const apiUrl = "https://kapi.kakao.com";
+    const { access_token } = tokenResponse;
+
+    // take user data
+    const userToken = await (
+      await fetch(`${apiUrl}/v1/user/access_token_info`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      })
+    ).json();
+
+    // if userdata is unknown
+    if (userToken.msg === "no authentication key!") {
+      console.log(userToken.msg);
+      return res.redirect("/login");
+    }
+
+    // request user info
+    const userData = await (
+      await fetch(`${apiUrl}/v2/user/me`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          target_id_type: "user_id",
+          target_id: userToken.id,
+          Accept: "application/json",
+        },
+      })
+    ).json();
+
+    const kakaoAccount = userData.kakao_account;
+    const kakaoProfile = kakaoAccount.profile;
+
+    if (
+      kakaoAccount.is_email_valid === false ||
+      kakaoAccount.is_email_verified === false
+    ) {
+      console.log("email is not valid or verified");
+      return res.redirect("/login");
+    }
+
+    let user = await User.findOne({ email: kakaoAccount.email });
+    if (!user) {
+      user = await User.create({
+        name: kakaoProfile.nickname,
+        socialOnly: true,
+        username: kakaoProfile.nickname,
+        email: kakaoAccount.email,
+        password: "",
+        avatarUrl: kakaoProfile.profile_image_url,
+      });
+    }
+    req.session.loggedIn = true;
+    req.session.user = user;
+    return res.redirect("/");
+  } else {
+    return res.redirect("/login");
+  }
+};
+
+export const logout = (req, res) => {
+  req.session.destroy();
+  return res.redirect("/");
+};
+
+export const getEdit = (req, res) => {
+  return res.render("edit-profile", { pageTitle: "Edit Profile" });
+};
+
+export const postEdit = async (req, res) => {
+  const {
+    session: {
+      user: { _id, username: beforeName, email: beforeEmail, socialOnly },
+    },
+    body: { name, username, email, location },
+  } = req;
+
+  // Social Login => error
+  if (socialOnly && beforeEmail !== email) {
+    return res.status(400).render("edit-profile", {
+      pageTitle: "Edit Profile",
+      errorMessage: "This ID(Social Login) cannot change email.",
+    });
+  }
+
+  // Set Condition for Search User
+  let searchCondition = [];
+  if (beforeName !== username) searchCondition.push({ username });
+  if (beforeEmail !== email) searchCondition.push({ email });
+
+  if (searchCondition.length > 0) {
+    if (await User.exists({ $or: searchCondition })) {
+      return res.status(400).render("edit-profile", {
+        pageTitle: "Edit Profile",
+        errorMessage: "This username or email address is already taken.",
+      });
+    }
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    _id,
+    {
+      name,
+      username,
+      email,
+      location,
+    },
+    { new: true }
+  );
+
+  req.session.user = updatedUser;
+  return res.redirect("/users/edit");
+};
+
 export const see = (req, res) => res.send("See User");
