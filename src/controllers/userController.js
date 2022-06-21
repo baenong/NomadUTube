@@ -267,9 +267,16 @@ export const postEdit = async (req, res) => {
   const pageTitle = "Edit Profile";
   const {
     session: {
-      user: { _id, username: beforeName, email: beforeEmail, socialOnly },
+      user: {
+        _id,
+        avatarUrl,
+        username: beforeName,
+        email: beforeEmail,
+        socialOnly,
+      },
     },
     body: { name, username, email, location },
+    file,
   } = req;
 
   // Social Login => error
@@ -297,6 +304,7 @@ export const postEdit = async (req, res) => {
   const updatedUser = await User.findByIdAndUpdate(
     _id,
     {
+      avatarUrl: file ? file.path : avatarUrl,
       name,
       username,
       email,
@@ -319,8 +327,10 @@ export const postChangePassword = async (req, res) => {
     },
     body: { oldPassword, newPassword, newPassword2 },
   } = req;
+
   const user = await User.findById(_id);
   const ok = await bcrypt.compare(oldPassword, user.password);
+
   if (!ok) {
     return res.status(400).render("user/change-password", {
       pageTitle: "Change Password",
@@ -344,4 +354,11 @@ export const postChangePassword = async (req, res) => {
   return res.redirect("/login");
 };
 
-export const see = (req, res) => res.send("See User");
+export const see = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id).populate("videos");
+  if (!user) {
+    return res.status(404).render("404", { pageTitle: "user not found" });
+  }
+  return res.render("user/profile", { pageTitle: user.name, user });
+};

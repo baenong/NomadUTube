@@ -2,10 +2,14 @@ extends base.pug
 
 block content
     div
+        video(src="/" + video.fileUrl, controls)
         p=video.description
         small=video.createdAt
         h3 #{video.views} #{video.views === 1 ? "view" : "views"}
-    a(href=`${video.id}/edit`) Edit Video &rarr;
-    br
-    a(href=`${video.id}/delete`) Delete Video &rarr;
-    //- if you input / before url, that means absolute url(root/~~) else relative url
+    div 
+        small Uploaded By #{owver.name}
+    if String(video.owner) === String(loggedInUser._id)
+        a(href=`${video.id}/edit`) Edit Video &rarr;
+        br
+        a(href=`${video.id}/delete`) Delete Video &rarr;
+        //- if you input / before url, that means absolute url(root/~~) else relative url
