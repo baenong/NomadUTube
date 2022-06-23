@@ -16,7 +16,9 @@ export const home = async (req, res) => {
   })
   */
   try {
-    const videos = await Video.find({}).sort({ createdAt: "desc" });
+    const videos = await Video.find({})
+      .sort({ createdAt: "desc" })
+      .populate("owner", "name");
     return res.render("home", { pageTitle: "Home", videos });
   } catch {
     return res.render("server-error");
@@ -47,8 +49,6 @@ export const getEdit = async (req, res) => {
     return res.render("404", { pageTitle: "Video not found." });
   }
 
-  // 소유주가 맞는지 확인하는 프로세스가 필요함(url만 쳐서 edit 화면으로 못 가도록)
-  // 아래 렌더링에 video가 필요하기 때문에 처음에 exists대신 findById를 쓰는 것이 낫다
   if (String(video.owner) !== String(_id)) {
     return res.status(403).redirect("/");
   }
@@ -151,7 +151,9 @@ export const search = async (req, res) => {
     // Search
     videos = await Video.find({
       title: { $regex: new RegExp(keyword, "i") },
-    }).sort({ createdAt: "desc" });
+    })
+      .sort({ createdAt: "desc" })
+      .populate("owner", "name");
   }
   return res.render("search", { pageTitle: "Search", videos });
 };

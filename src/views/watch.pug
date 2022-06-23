@@ -7,7 +7,7 @@ block content
         small=video.createdAt
         h3 #{video.views} #{video.views === 1 ? "view" : "views"}
     div 
-        small Uploaded By #{owver.name}
+        small Uploaded By #{owner.name}
     if String(video.owner) === String(loggedInUser._id)
         a(href=`${video.id}/edit`) Edit Video &rarr;
         br

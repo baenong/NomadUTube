@@ -11,7 +11,7 @@ block content
         input(placeholder="Email", type="email", required, name="email")
         input(placeholder="Location", type="text", required, name="location")
         input(type="submit", value="Join")
-    hr
-    div 
+        include partials/social-login.pug
+    div.auth-switch
         span Already have an account? 
         a(href="/login") Log in now &rarr;

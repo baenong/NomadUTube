@@ -1,0 +1,23 @@
+.social-login {
+  margin-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 30px;
+
+  display: flex;
+  justify-content: space-between;
+
+  .social-btn {
+    &:first-child {
+      margin-right: 5px;
+    }
+  }
+
+  .social-btn__github {
+    background-color: #24883b;
+  }
+
+  .social-btn__kakao {
+    background-color: #fae100;
+    color: $bg;
+  }
+}
