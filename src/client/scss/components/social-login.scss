@@ -13,11 +13,12 @@
   }
 
   .social-btn__github {
-    background-color: #24883b;
+    background-color: #24883b !important;
+    color: white !important;
   }
 
   .social-btn__kakao {
-    background-color: #fae100;
-    color: $bg;
+    background-color: #fae100 !important;
+    color: $bg !important;
   }
 }
