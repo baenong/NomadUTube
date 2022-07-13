@@ -14,7 +14,7 @@ input[type="submit"] {
   all: unset;
   padding: 10px 20px;
   border-radius: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid $gray2;
   background-color: black;
   margin-bottom: 5px;
   font-size: 16px;
@@ -22,7 +22,7 @@ input[type="submit"] {
   width: 90%;
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.7);
+    color: $gray7;
   }
 }
 

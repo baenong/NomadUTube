@@ -12,18 +12,14 @@ export const postJoin = async (req, res) => {
 
   // check error
   if (password !== password2) {
-    return res.status(400).render("join", {
-      pageTitle,
-      errorMessage: "Password confirmation does not match.",
-    });
+    req.flash("error", "Password confirmation does not match.");
+    return res.status(400).render("join", { pageTitle });
   }
 
   const exists = await User.exists({ $or: [{ username }, { email }] });
   if (exists) {
-    return res.status(400).render("join", {
-      pageTitle,
-      errorMessage: "This username or email address is already taken.",
-    });
+    req.flash("error", "This username or email address is already taken.");
+    return res.status(400).render("join", { pageTitle });
   }
 
   try {
@@ -38,10 +34,8 @@ export const postJoin = async (req, res) => {
     });
     return res.redirect("/login");
   } catch (error) {
-    return res.status(400).render("join", {
-      pageTitle: "Join",
-      errorMessage: error._message,
-    });
+    req.flash("error", error._message);
+    return res.status(400).render("join", { pageTitle: "Join" });
   }
 };
 
@@ -54,18 +48,16 @@ export const postLogin = async (req, res) => {
 
   // check if username exist
   const user = await User.findOne({ username, socialOnly: false });
-  if (!user)
-    return res.status(400).render("login", {
-      pageTitle,
-      errorMessage: "An Account with this username does not exists.",
-    });
+  if (!user) {
+    req.flash("error", "An Account with this username does not exists.");
+    return res.status(400).render("login", { pageTitle });
+  }
 
   // check if password correct
   const ok = await bcrypt.compare(password, user.password);
   if (!ok) {
-    return res
-      .status(400)
-      .render("login", { pageTitle, errorMessage: "Wrong password" });
+    req.flash("error", "Wrong password!");
+    return res.status(400).render("login", { pageTitle });
   }
 
   req.session.loggedIn = true;
@@ -181,9 +173,7 @@ export const finishKakaoLogin = async (req, res) => {
   const finalUrl = `${baseUrl}?${params}`;
 
   const tokenResponse = await (
-    await fetch(finalUrl, {
-      method: "POST",
-    })
+    await fetch(finalUrl, { method: "POST" })
   ).json();
 
   // if access token exists
@@ -203,9 +193,9 @@ export const finishKakaoLogin = async (req, res) => {
 
     // if userdata is unknown
     if (userToken.msg === "no authentication key!") {
+      req.flash("error", "No authentication key!");
       return res.render("login", {
         pageTitle,
-        errorMessage: "no authentication key",
       });
     }
 
@@ -229,10 +219,8 @@ export const finishKakaoLogin = async (req, res) => {
       kakaoAccount.is_email_valid === false ||
       kakaoAccount.is_email_verified === false
     ) {
-      return res.render("login", {
-        pageTitle,
-        errorMessage: "Email is not valid or not verifired",
-      });
+      req.flash("error", "Email is not valid or not verifired.");
+      return res.render("login", { pageTitle });
     }
 
     let user = await User.findOne({ email: kakaoAccount.email });
@@ -255,6 +243,7 @@ export const finishKakaoLogin = async (req, res) => {
 };
 
 export const logout = (req, res) => {
+  req.flash("info", "Bye Bye");
   req.session.destroy();
   return res.redirect("/");
 };
@@ -281,10 +270,8 @@ export const postEdit = async (req, res) => {
 
   // Social Login => error
   if (socialOnly && beforeEmail !== email) {
-    return res.status(400).render("user/edit-profile", {
-      pageTitle,
-      errorMessage: "This ID(Social Login) cannot change email.",
-    });
+    req.flash("error", "This ID(Social Login) cannot change email.");
+    return res.status(400).render("user/edit-profile", { pageTitle });
   }
 
   // Set Condition for Search User
@@ -294,10 +281,8 @@ export const postEdit = async (req, res) => {
 
   if (searchCondition.length > 0) {
     if (await User.exists({ $or: searchCondition })) {
-      return res.status(400).render("user/edit-profile", {
-        pageTitle,
-        errorMessage: "This username or email address is already taken.",
-      });
+      req.flash("error", "This username or email address is already taken.");
+      return res.status(400).render("user/edit-profile", { pageTitle });
     }
   }
 
@@ -318,6 +303,10 @@ export const postEdit = async (req, res) => {
 };
 
 export const getChangePassword = (req, res) => {
+  if (req.session.user.socialOnly === true) {
+    req.flash("error", "Can't change password.");
+    return res.redirect("/");
+  }
   return res.render("user/change-password", { pageTitle: "Change Password" });
 };
 
@@ -333,24 +322,24 @@ export const postChangePassword = async (req, res) => {
   const ok = await bcrypt.compare(oldPassword, user.password);
 
   if (!ok) {
-    return res.status(400).render("user/change-password", {
-      pageTitle: "Change Password",
-      errorMessage: "The current password is incorrect",
-    });
+    req.flash("error", "The current password is incorrect.");
+    return res
+      .status(400)
+      .render("user/change-password", { pageTitle: "Change Password" });
   }
 
   // check new password
   if (newPassword !== newPassword2) {
-    return res.status(400).render("user/change-password", {
-      pageTitle: "Change Password",
-      errorMessage: "The password does not match the confirmation",
-    });
+    req.flash("error", "The password does not match the confirmation.");
+    return res
+      .status(400)
+      .render("user/change-password", { pageTitle: "Change Password" });
   }
 
   user.password = newPassword;
   await user.save();
   // send notification
-
+  req.flash("info", "Password updated");
   req.session.destroy();
   return res.redirect("/login");
 };
@@ -358,10 +347,15 @@ export const postChangePassword = async (req, res) => {
 export const see = async (req, res) => {
   const { id } = req.params;
   if (id) {
-    const user = await User.findById(id).populate("videos");
-    console.log(user);
+    const user = await User.findById(id).populate({
+      path: "videos",
+      populate: {
+        path: "owner",
+        model: "User",
+      },
+    });
     if (!user) {
-      return res.status(404).render("404", { pageTitle: "user not found" });
+      return res.status(404).render("404", { pageTitle: "User not found" });
     }
     return res.render("user/profile", { pageTitle: user.name, user });
   }

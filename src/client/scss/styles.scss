@@ -12,11 +12,11 @@
 @import "./components/social-login.scss";
 
 // Screens
-@import "./screens/home.scss";
 @import "./screens/search.scss";
 @import "./screens/profile.scss";
 @import "./screens/edit-profile.scss";
 @import "./screens/upload.scss";
+@import "./screens/watch.scss";
 
 // Defaults
 a {
@@ -35,5 +35,43 @@ main {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  margin-top: 50px;
+  margin-top: 80px;
+}
+
+@keyframes goAway {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.message__container {
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow-y: hidden;
+  .message {
+    position: absolute;
+    bottom: 0px;
+    margin: 0 auto;
+    max-width: 200px;
+    padding: 10px 20px;
+    border-radius: 10px 10px 0 0;
+    color: white;
+    animation: goAway 0.5s ease-in-out forwards;
+    animation-delay: 3s;
+
+    &.error {
+      background-color: tomato;
+    }
+    &.info {
+      background-color: chartreuse;
+    }
+    &.success {
+      background-color: $link;
+    }
+  }
 }

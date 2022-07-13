@@ -115,4 +115,4 @@ const init = async () => {
 };
 
 init();
-startBtn.addEventListener("click", handleStart);
+actionBtn.addEventListener("click", handleStart);

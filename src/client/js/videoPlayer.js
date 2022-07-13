@@ -151,8 +151,8 @@ const handleKeyboardDown = (event) => {
 
 const handleEnded = () => {
   playBtnIcon.classList = "fas fa-rotate-right";
-  const { _id } = videoContainer.dataset;
-  fetch(`/api/videos/${_id}/view`, { method: "POST" });
+  const { id } = videoContainer.dataset;
+  fetch(`/api/videos/${id}/view`, { method: "POST" });
 };
 
 video.addEventListener("pause", handleVideoPause);

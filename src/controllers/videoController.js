@@ -31,7 +31,7 @@ export const watch = async (req, res) => {
   const owner = await User.findById(video.owner);
 
   if (!video) {
-    return res.render("404", { pageTitle: "Video not found." });
+    return res.status(404).render("404", { pageTitle: "Video not found." });
   }
   return res.render("watch", { pageTitle: video.title, video, owner });
 };
@@ -46,10 +46,11 @@ export const getEdit = async (req, res) => {
   } = req;
   const video = await Video.findById(id);
   if (!video) {
-    return res.render("404", { pageTitle: "Video not found." });
+    return res.status(404).render("404", { pageTitle: "Video not found." });
   }
 
   if (String(video.owner) !== String(_id)) {
+    req.flash("error", "Not authorized");
     return res.status(403).redirect("/");
   }
   res.render("edit", { pageTitle: `Edit: ${video.title}`, video });
@@ -70,14 +71,16 @@ export const postEdit = async (req, res) => {
     return res.status(404).render("404", { pageTitle: "Video not found." });
   }
   if (String(video.owner) !== String(_id)) {
+    req.flash("error", "You are not the owner of the video.");
     return res.status(403).redirect("/");
   }
 
-  await video.findByIdAndUpdate(id, {
+  await Video.findByIdAndUpdate(id, {
     title,
     description,
     hashtags: Video.formatHashtags(hashtags),
   });
+  req.flash("success", "Change saved.");
   return res.redirect(`/videos/${id}`);
 };
 
@@ -87,7 +90,6 @@ export const getUpload = (req, res) => {
 };
 
 export const postUpload = async (req, res) => {
-  // const { title, description, hashtags } = req.body;
   const {
     session: {
       user: { _id },
@@ -95,12 +97,13 @@ export const postUpload = async (req, res) => {
     body: { title, description, hashtags },
     files: { video, thumb },
   } = req;
+
   try {
     const newVideo = await Video.create({
       title,
       description,
       fileUrl: video[0].path,
-      thumbUrl: thumb[0].path,
+      thumbUrl: thumb[0].filename,
       owner: _id,
       hashtags: Video.formatHashtags(hashtags),
     });
@@ -111,11 +114,8 @@ export const postUpload = async (req, res) => {
 
     return res.redirect("/");
   } catch (error) {
-    console.log(error);
-    return res.status(400).render("upload", {
-      pageTitle: "Upload Video",
-      errorMessage: error._message,
-    });
+    req.flash("error", error._message);
+    return res.status(400).render("upload", { pageTitle: "Upload Video" });
   }
 };
 

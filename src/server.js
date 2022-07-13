@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import session from "express-session";
+import expressFlash from "express-flash";
 import MongoStore from "connect-mongo";
 import rootRouter from "./routers/rootRouter";
 import userRouter from "./routers/userRouter";
@@ -28,6 +29,7 @@ app.use(
   })
 );
 
+app.use(expressFlash());
 app.use(localsMiddleware);
 
 // Global Middlewares

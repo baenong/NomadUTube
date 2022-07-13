@@ -20,19 +20,33 @@ block content
                 div.videoControls__right
                     button#fullscreen
                         i.fas.fa-expand
-
-//-
-    div
-        video(src="/" + video.fileUrl, controls)
-        p=video.description
-        small=video.createdAt
-        h3 #{video.views} #{video.views === 1 ? "view" : "views"}
-    div 
-        small Uploaded By #{owner.name}
-    if String(video.owner) === String(loggedInUser._id)
-        a(href=`${video.id}/edit`) Edit Video &rarr;
-        br
-        a(href=`${video.id}/delete`) Delete Video &rarr;
+    div#videoInfo
+        div#videoMeta
+            ul#videoMeta__hashtags
+                each hashtag, index in video.hashtags
+                    if index < 2
+                        li=hashtag
+            h1 #{video.title}
+            span #{video.meta.views} #{video.meta.views === 1 ? "view" : "views"} ·
+            span #{video.createdAt.getFullYear()}. #{video.createdAt.getMonth()}. #{video.createdAt.getDate()}.
+        div#video__description
+            div
+                a(href=`/users/${owner._id}`)#video__uploader
+                    if !owner.avatarUrl
+                        span 😊
+                    else 
+                        span
+                            img(src=`${owner.socialOnly?"":"/"}` + owner.avatarUrl).video__uploader-avatar
+                    span #{owner.name}
+            ul#video__description__hashtags
+                each hashtag in video.hashtags
+                    li=hashtag
+            p=video.description
+        div#video__edit
+            if String(video.owner) === String(loggedInUser._id)
+                a(href=`${video.id}/edit`) Edit Video &rarr;
+                br
+                a(href=`${video.id}/delete`) Delete Video &rarr;
     
 block scripts 
     script(src="/static/js/videoPlayer.js") 

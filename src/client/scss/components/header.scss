@@ -1,12 +1,28 @@
 header {
-  padding: 20px 50px;
+  position: fixed;
+  z-index: 3;
+  top: 0;
+  width: 100%;
+  padding: 10px 0px;
+  background-color: rgba(50, 50, 50);
+
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   .header__logo {
     color: $red;
     font-size: 38px;
+    margin-left: 40px;
+    span {
+      color: white;
+      letter-spacing: -3px;
+    }
   }
+  nav {
+    margin-right: 40px;
+  }
+
   ul {
     display: flex;
     justify-content: space-between;
