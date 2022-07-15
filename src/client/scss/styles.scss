@@ -31,6 +31,10 @@ body {
   color: white;
 }
 
+body::-webkit-scrollbar {
+  display: none;
+}
+
 main {
   max-width: 1200px;
   width: 100%;

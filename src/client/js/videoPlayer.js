@@ -17,6 +17,8 @@ const fullScreenBtnIcon = fullScreenBtn.querySelector("i");
 const videoContainer = document.getElementById("videoContainer");
 const videoControls = document.getElementById("videoControls");
 
+const textarea = document.querySelector("#commentForm > textarea");
+
 let volumeValue = 0.5;
 video.volume = volumeValue;
 
@@ -136,16 +138,19 @@ const handleVolumeLeave = () => {
 };
 
 const handleKeyboardDown = (event) => {
-  switch (event.key) {
-    case " ":
-      handlePlay();
-      break;
-    case "m":
-      handleMute();
-      break;
-    case "f":
-      handleFullScreen();
-      break;
+  if (!document.activeElement.classList.contains("comment")) {
+    switch (event.key) {
+      case " ":
+        event.preventDefault();
+        handlePlay();
+        break;
+      case "m":
+        handleMute();
+        break;
+      case "f":
+        handleFullScreen();
+        break;
+    }
   }
 };
 
