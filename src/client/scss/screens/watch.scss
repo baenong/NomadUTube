@@ -67,8 +67,13 @@
   }
 }
 .video__comments {
-  margin-top: 15px;
+  margin: 30px 0px;
+
   #commentForm {
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
     textarea {
       resize: none;
       width: 100%;
@@ -80,6 +85,16 @@
     }
     textarea:focus {
       outline: 0;
+    }
+    button {
+      width: fit-content;
+      color: $gray8;
+      background-color: $link;
+      padding: 5px 15px;
+      margin-top: 5px;
+      font-size: 16px;
+      font-weight: 100;
+      border: 0;
     }
   }
 }
