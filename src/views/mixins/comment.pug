@@ -1,0 +1,20 @@
+mixin comment(comment)
+    div.comment-mixin__container
+        div.comment-mixin__avatar 
+            a(href=`/users/${comment.owner._id}`)
+                if !comment.owner.avatarUrl
+                    span 😊
+                else 
+                    span
+                        img(src=`${comment.owner.socialOnly?"":"/"}` + comment.owner.avatarUrl)
+        div.comment-mixin__data
+            div.comment-mixin__header
+                span #{comment.owner.name}
+                span #{comment.createdAt.getFullYear()}. #{comment.createdAt.getMonth()}. #{comment.createdAt.getDate()}
+            div.comment-mixin__text
+                p #{comment.text}
+            div.comment-mixin__reply
+            if String(comment.owner._id) === String(loggedInUser._id)
+                div.comment-edit
+                    a(href=`/api/comments/${comment._id}/delete`).edit-btn X
+

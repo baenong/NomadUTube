@@ -1,4 +1,5 @@
 import User from "../models/User";
+import Comment from "../models/Comment";
 import Video from "../models/Video";
 
 export const home = async (req, res) => {
@@ -29,11 +30,17 @@ export const watch = async (req, res) => {
   const { id } = req.params;
   const video = await Video.findById(id);
   const owner = await User.findById(video.owner);
+  const comments = await Comment.find({ video: id }).populate("owner");
 
   if (!video) {
     return res.status(404).render("404", { pageTitle: "Video not found." });
   }
-  return res.render("watch", { pageTitle: video.title, video, owner });
+  return res.render("watch", {
+    pageTitle: video.title,
+    video,
+    owner,
+    comments,
+  });
 };
 
 // Edit Video Controller
@@ -174,6 +181,62 @@ export const registerView = async (req, res) => {
 };
 
 export const createComment = async (req, res) => {
-  console.log(req.body);
-  return res.end();
+  const {
+    params: { id },
+    body: { text },
+    session: { user },
+  } = req;
+
+  const video = await Video.findById(id);
+
+  if (!video) {
+    return res.sendStatus(404);
+  }
+
+  const comment = await Comment.create({
+    text,
+    owner: user._id,
+    video: id,
+  });
+
+  video.comments.push(comment._id);
+  video.save();
+
+  const owner = await User.findById(user._id);
+  owner.comments.push(comment._id);
+  owner.save();
+
+  return res
+    .status(201)
+    .json({ name: owner.name, createdAt: comment.createdAt, id: comment._id });
+};
+
+export const deleteComment = async (req, res) => {
+  const {
+    params: { id },
+    session: {
+      user: { _id },
+    },
+  } = req;
+
+  const comment = await Comment.findById(id);
+  const user = await User.findById(_id);
+  const video = await Video.findById(comment.video);
+
+  if (!comment) {
+    return res.status(400).render("404", { pageTitle: "Comment not found." });
+  }
+  if (String(comment.owner) !== String(_id)) {
+    return res.status(403).redirect("/");
+  }
+
+  await Comment.findByIdAndDelete(id);
+  user.comments.splice(user.comments.indexOf(id), 1);
+  user.save();
+
+  video.comments.splice(video.comments.indexOf(id), 1);
+  video.save();
+
+  req.flash("info", "Delete Success");
+  return res.redirect(`/videos/${video._id}`);
 };

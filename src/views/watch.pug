@@ -1,4 +1,5 @@
 extends base.pug
+include mixins/comment
 
 block content
     div#videoContainer(data-id=video._id)
@@ -44,14 +45,20 @@ block content
             p=video.description
         div#video__edit
             if String(video.owner) === String(loggedInUser._id)
-                a(href=`${video.id}/edit`) Edit Video &rarr;
+                a(href=`${video.id}/edit`).edit-btn Edit Video &rarr;
                 br
-                a(href=`${video.id}/delete`) Delete Video &rarr;
+                a(href=`${video.id}/delete`).edit-btn Delete Video &rarr;
     if loggedIn
         div.video__comments
             form.video__comment-form#commentForm
-                textarea(cols="30", rows="10", placeholder="Write a comment...").comment
+                textarea(rows="2", placeholder="Write a comment...").comment
                 button Add Comment
+    ul#commentContainer
+        each comment in comments.reverse()
+            li.comment 
+                +comment(comment)
+        else 
+            span.empty__message No comments found.
     
 block scripts 
     script(src="/static/js/videoPlayer.js") 

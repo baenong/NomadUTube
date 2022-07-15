@@ -58,7 +58,7 @@ main {
   justify-content: center;
   overflow-y: hidden;
   .message {
-    position: absolute;
+    position: fixed;
     bottom: 0px;
     margin: 0 auto;
     max-width: 200px;
@@ -67,12 +67,13 @@ main {
     color: white;
     animation: goAway 0.5s ease-in-out forwards;
     animation-delay: 3s;
+    z-index: 3;
 
     &.error {
       background-color: tomato;
     }
     &.info {
-      background-color: chartreuse;
+      background-color: orange;
     }
     &.success {
       background-color: $link;
