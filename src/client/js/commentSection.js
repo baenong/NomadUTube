@@ -59,7 +59,7 @@ const addComment = (text, name, createdAt, id) => {
   const a = document.createElement("a");
   a.className = "edit-btn";
   a.href = `/api/comments/${id}/delete`;
-  a.innerText = "Delete Comment";
+  a.innerText = "X";
   commentEdit.appendChild(a);
   commentData.appendChild(commentEdit);
 
