@@ -163,7 +163,7 @@ const handleEnded = () => {
 video.addEventListener("pause", handleVideoPause);
 video.addEventListener("play", handleVideoPlay);
 video.addEventListener("click", handlePlay);
-video.addEventListener("loadedmetadata", handleLoadedMetadata);
+video.addEventListener("canplay", handleLoadedMetadata);
 video.addEventListener("timeupdate", handleTimeUpdate);
 video.addEventListener("ended", handleEnded);
 document.addEventListener("keydown", handleKeyboardDown);
