@@ -8,7 +8,7 @@ const addComment = (text, name, createdAt, id) => {
   const videoComments = document.querySelector("#commentContainer");
 
   if (videoComments.childElementCount === 1) {
-    videoComments.removeChild();
+    videoComments.removeChild(videoComments.childNodes[0]);
   }
 
   const newComment = document.createElement("li");
