@@ -3,7 +3,7 @@ include mixins/comment
 
 block content
     div#videoContainer(data-id=video._id)
-        video(src="/" + video.fileUrl)
+        video(src=video.fileUrl)
         div#videoControls
             input(type="range", step="1", value=0, min="0")#timeline
             div.videoControls__container
