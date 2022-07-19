@@ -6,9 +6,10 @@ const textarea = form.querySelector("textarea");
 
 const addComment = (text, name, createdAt, id) => {
   const videoComments = document.querySelector("#commentContainer");
+  const firstChild = videoComments.childNodes[0];
 
-  if (videoComments.childElementCount === 1) {
-    videoComments.removeChild(videoComments.childNodes[0]);
+  if (firstChild.className === "empty__message") {
+    videoComments.removeChild(firstChild);
   }
 
   const newComment = document.createElement("li");
