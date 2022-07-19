@@ -56,3 +56,21 @@ export const uploadVideo = multer({
   },
   storage: multerUploader,
 });
+
+export const s3DeleteAvatarMiddleware = (req, res, next) => {
+  if (!req.file) {
+    return next();
+  }
+  s3.deleteObject(
+    {
+      bucket: "utubestudy",
+      key: `images/${req.session.user.avatarURL.split("/")[4]}`,
+    },
+    (err) => {
+      if (err) {
+        throw err;
+      }
+    }
+  );
+  next();
+};
