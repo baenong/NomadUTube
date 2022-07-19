@@ -25,7 +25,7 @@ block content
         div#videoMeta
             ul#videoMeta__hashtags
                 each hashtag, index in video.hashtags
-                    if index < 2
+                    if index < 3
                         li=hashtag
             h1 #{video.title}
             span #{video.meta.views} #{video.meta.views === 1 ? "view" : "views"} ·
