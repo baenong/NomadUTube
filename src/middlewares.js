@@ -1,6 +1,6 @@
 import multer from "multer";
 import multerS3 from "multer-s3";
-import { S3Client } from "@aws-sdk/client-s3";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 const s3 = new S3Client({
   region: "ap-northeast-2",
@@ -66,23 +66,25 @@ export const uploadVideo = multer({
   storage: isHeroku ? s3VideoUploader : undefined,
 });
 
-export const s3DeleteAvatarMiddleware = (req, res, next) => {
+export const s3DeleteAvatarMiddleware = async (req, res, next) => {
   if (res.locals.loggedInUser.socialOnly) {
     return next();
   }
   if (!req.file) {
     return next();
   }
-  s3.deleteObject(
-    {
-      bucket: "utubestudy",
-      key: `images/${req.session.user.avatarURL.split("/")[4]}`,
-    },
-    (err) => {
-      if (err) {
-        throw err;
+  await s3.send(
+    new DeleteObjectCommand(
+      {
+        Bucket: "utubestudy",
+        Key: `images/${String(req.session.user.avatarURL).split("/")[3]}`,
+      },
+      (err) => {
+        if (err) {
+          throw err;
+        }
       }
-    }
+    )
   );
   next();
 };

@@ -249,6 +249,8 @@ export const logout = (req, res) => {
 };
 
 export const getEdit = (req, res) => {
+  console.log(req.session);
+  console.log(String(req.session.user.avatarUrl).split("/"));
   return res.render("user/edit-profile", { pageTitle: "Edit Profile" });
 };
 
@@ -289,7 +291,11 @@ export const postEdit = async (req, res) => {
   const updatedUser = await User.findByIdAndUpdate(
     _id,
     {
-      avatarUrl: file ? (isHeroku ? file.location : file.path) : avatarUrl,
+      avatarUrl: file
+        ? req.session.isHeroku
+          ? file.location
+          : file.path
+        : avatarUrl,
       name,
       username,
       email,
