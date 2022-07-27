@@ -66,28 +66,27 @@ export const uploadVideo = multer({
   storage: isHeroku ? s3VideoUploader : undefined,
 });
 
-export const s3DeleteAvatarMiddleware = (req, res, next) => {
+export const s3DeleteAvatarMiddleware = async (req, res, next) => {
+  const avatar = req.session.user.avatarURL;
   if (req.session.user.socialOnly) {
     return next();
   }
   if (!req.file) {
     return next();
   }
-  if (!req.session.user.avatarURL) {
+  if (!avatar) {
     return next();
   }
 
-  console.log(req.session.user.avatarURL);
-  s3.deleteObject(
-    {
-      bucket: "utubestudy",
-      key: req.session.user.avatarURL,
-    },
-    (err, data) => {
-      if (err) {
-        throw err;
-      }
-    }
+  const response = await s3.send(
+    new DeleteObjectCommand({
+      Bucket: "utubestudy",
+      Key: avatar,
+    })
   );
+
+  console.log("avatar url : ", avatar);
+  console.log(response);
+
   next();
 };
