@@ -18,6 +18,6 @@ rootRouter
   .all(publicOnlyMiddleware)
   .get(getLogin)
   .post(postLogin);
-rootRouter.get("/search", search);
+rootRouter.route("/search").get(search);
 
 export default rootRouter;

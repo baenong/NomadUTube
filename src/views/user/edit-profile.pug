@@ -7,7 +7,7 @@ block content
         img(src=loggedInUser.avatarUrl).avatar
         h3=loggedInUser.name
     form(method="POST", enctype="multipart/form-data").edit-profile__form
-        if loggedInUser.socialOnly
+        if !loggedInUser.socialOnly
             label(for="avatar") Avatar
             input(type="file", id="avatar", name="avatar", accept="image/*")
         input(placeholder="Name", type="text", required, name="name" value=loggedInUser.name)

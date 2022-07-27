@@ -1,0 +1,20 @@
+mixin search-video(video)
+    div.search-mixin__container
+        a(href=`/videos/${video._id}`)
+            div.search-mixin__thumb(style=`background-image:url(${video.thumbUrl});`)
+        div.search-mixin
+            a(href=`/videos/${video._id}`).search-mixin__data
+                span.search-mixin__title=video.title
+                div.search-mixin__meta
+                    span 조회수 #{video.meta.views} 회 · 
+                    span #{video.createdAt.getFullYear()}. #{video.createdAt.getMonth()}. #{video.createdAt.getDate()}.
+            div.search-mixin__owner
+                a(href=`/users/${video.owner._id}`).search-mixin__avatar
+                    if !video.owner.avatarUrl
+                        span 😊
+                    else 
+                        span
+                            img(src=`${video.owner.socialOnly?"":"/"}` + video.owner.avatarUrl).video__uploader-avatar
+                    span #{video.owner.name}
+            a(href=`/videos/${video._id}`).search-mixin__description
+                span #{video.description}

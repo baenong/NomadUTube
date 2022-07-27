@@ -1,0 +1,52 @@
+.search-mixin__container {
+  display: flex;
+  margin: 15px;
+
+  .search-mixin__thumb {
+    height: 200px;
+    margin-right: 15px;
+    width: 300px;
+    background-color: ivory;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .search-mixin {
+    color: $gray7;
+    font-size: 16px;
+    font-weight: 200;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+
+    .search-mixin__data {
+      .search-mixin__title {
+        font-size: 20px;
+        color: white;
+        font-weight: 500;
+        line-height: 15px;
+      }
+      .search-mixin__meta {
+        margin-top: 5px;
+        span {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .search-mixin__owner {
+      margin: 15px 0px;
+      .search-mixin__avatar {
+        span:first-child {
+          margin-right: 5px;
+        }
+        .video__uploader-avatar {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background-color: white;
+        }
+      }
+    }
+  }
+}

@@ -10,9 +10,17 @@ const s3 = new S3Client({
   },
 });
 
-const multerUploader = multerS3({
+const isHeroku = process.env.NODE_ENV === "production";
+
+const s3ImageUploader = multerS3({
   s3: s3,
-  bucket: "utubestudy",
+  bucket: "utubestudy/images",
+  acl: "public-read",
+});
+
+const s3VideoUploader = multerS3({
+  s3: s3,
+  bucket: "utubestudy/videos",
   acl: "public-read",
 });
 
@@ -46,7 +54,7 @@ export const uploadAvatar = multer({
   limits: {
     fileSize: 3000000,
   },
-  storage: multerUploader,
+  storage: isHeroku ? s3ImageUploader : undefined,
 });
 
 export const uploadVideo = multer({
@@ -54,7 +62,7 @@ export const uploadVideo = multer({
   limits: {
     fileSize: 10000000,
   },
-  storage: multerUploader,
+  storage: isHeroku ? s3VideoUploader : undefined,
 });
 
 export const s3DeleteAvatarMiddleware = (req, res, next) => {

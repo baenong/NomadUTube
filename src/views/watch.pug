@@ -26,7 +26,8 @@ block content
             ul#videoMeta__hashtags
                 each hashtag, index in video.hashtags
                     if index < 3
-                        li=hashtag
+                        li.hashtag
+                            a(href=`/search?keyword=%23${hashtag.substr(1)}`)=hashtag
             h1 #{video.title}
             span #{video.meta.views} #{video.meta.views === 1 ? "view" : "views"} ·
             span #{video.createdAt.getFullYear()}. #{video.createdAt.getMonth()}. #{video.createdAt.getDate()}.
@@ -41,7 +42,8 @@ block content
                     span #{owner.name}
             ul#video__description__hashtags
                 each hashtag in video.hashtags
-                    li=hashtag
+                    li.hashtag
+                            a(href=`/search?keyword=%23${hashtag.substr(1)}`)=hashtag
             p=video.description
         div#video__edit
             if String(video.owner) === String(loggedInUser._id)

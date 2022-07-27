@@ -157,11 +157,19 @@ export const search = async (req, res) => {
   let videos = [];
   if (keyword) {
     // Search
-    videos = await Video.find({
-      title: { $regex: new RegExp(keyword, "i") },
-    })
-      .sort({ createdAt: "desc" })
-      .populate("owner", "name");
+    if (keyword.charAt(0) === "#") {
+      videos = await Video.find({
+        hashtags: keyword,
+      })
+        .sort({ createdAt: "desc" })
+        .populate("owner", "name");
+    } else {
+      videos = await Video.find({
+        title: { $regex: new RegExp(keyword, "i") },
+      })
+        .sort({ createdAt: "desc" })
+        .populate("owner", "name");
+    }
   }
   return res.render("search", { pageTitle: "Search", videos });
 };
