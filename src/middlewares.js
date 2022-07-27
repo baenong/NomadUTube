@@ -67,7 +67,7 @@ export const uploadVideo = multer({
 });
 
 export const s3DeleteAvatarMiddleware = async (req, res, next) => {
-  if (res.locals.loggedInUser.socialOnly) {
+  if (req.session.loggedInUser.socialOnly) {
     return next();
   }
   if (!req.file) {

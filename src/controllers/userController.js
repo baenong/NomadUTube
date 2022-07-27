@@ -249,8 +249,6 @@ export const logout = (req, res) => {
 };
 
 export const getEdit = (req, res) => {
-  console.log(req.session);
-  console.log(String(req.session.user.avatarUrl).split("/"));
   return res.render("user/edit-profile", { pageTitle: "Edit Profile" });
 };
 
@@ -287,7 +285,7 @@ export const postEdit = async (req, res) => {
       return res.status(400).render("user/edit-profile", { pageTitle });
     }
   }
-
+  console.log(file);
   const updatedUser = await User.findByIdAndUpdate(
     _id,
     {
@@ -305,6 +303,7 @@ export const postEdit = async (req, res) => {
   );
 
   req.session.user = updatedUser;
+  req.flash("info", "Profile Update");
   return res.redirect("/users/edit");
 };
 
