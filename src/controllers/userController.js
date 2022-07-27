@@ -290,7 +290,7 @@ export const postEdit = async (req, res) => {
     _id,
     {
       avatarUrl: file
-        ? req.session.isHeroku
+        ? res.locals.isHeroku
           ? file.location
           : file.path
         : avatarUrl,
