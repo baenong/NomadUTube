@@ -81,6 +81,8 @@ export const s3DeleteAvatarMiddleware = async (req, res, next) => {
     return next();
   }
 
+  console.log(avatar.split("/"));
+  console.log(avatar.split("/")[3]);
   const response = await s3.send(
     new DeleteObjectCommand({
       Bucket: "utubestudy",
