@@ -4,8 +4,9 @@ block content
     if errorMessage 
         span=errorMessage
     if loggedInUser.avatarUrl
-        img(src=loggedInUser.avatarUrl).avatar
-        h3=loggedInUser.name
+        div.edit-profile__info
+            img(src=loggedInUser.avatarUrl).avatar
+            h3=loggedInUser.name
     form(method="POST", enctype="multipart/form-data").edit-profile__form
         if !loggedInUser.socialOnly
             label(for="avatar") Avatar
