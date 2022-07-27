@@ -15,14 +15,12 @@ const isHeroku = process.env.NODE_ENV === "production";
 const s3ImageUploader = multerS3({
   s3: s3,
   bucket: "utubestudy",
-  Key: "images",
   acl: "public-read",
 });
 
 const s3VideoUploader = multerS3({
   s3: s3,
   bucket: "utubestudy",
-  Key: "videos",
   acl: "public-read",
 });
 
@@ -70,7 +68,7 @@ export const uploadVideo = multer({
 
 export const s3DeleteAvatarMiddleware = async (req, res, next) => {
   console.log(req.file);
-  console.log(req.session.isHeroku);
+  console.log("Heroku : ", req.session.isHeroku);
   if (req.session.user.socialOnly) {
     return next();
   }
@@ -81,7 +79,7 @@ export const s3DeleteAvatarMiddleware = async (req, res, next) => {
     new DeleteObjectCommand(
       {
         Bucket: "utubestudy",
-        Key: `images/${String(req.session.user.avatarURL).split("/")[3]}`,
+        Key: `${String(req.session.user.avatarURL).split("/")[3]}`,
       },
       (err) => {
         if (err) {
