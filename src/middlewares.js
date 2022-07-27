@@ -68,8 +68,6 @@ export const uploadVideo = multer({
 
 export const s3DeleteAvatarMiddleware = async (req, res, next) => {
   const avatar = req.session.user.avatarUrl;
-  console.log("avatar url : ", avatar);
-  console.log(req.session.user);
 
   if (req.session.user.socialOnly) {
     return next();
@@ -81,12 +79,10 @@ export const s3DeleteAvatarMiddleware = async (req, res, next) => {
     return next();
   }
 
-  console.log(avatar.split("/"));
-  console.log(avatar.split("/")[3]);
   const response = await s3.send(
     new DeleteObjectCommand({
       Bucket: "utubestudy",
-      Key: avatar,
+      Key: avatar.split("/")[3],
     })
   );
 
