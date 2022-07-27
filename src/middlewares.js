@@ -70,6 +70,7 @@ export const uploadVideo = multer({
 
 export const s3DeleteAvatarMiddleware = async (req, res, next) => {
   console.log(req.file);
+  console.log(req.session.isHeroku);
   if (req.session.user.socialOnly) {
     return next();
   }
