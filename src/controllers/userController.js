@@ -285,7 +285,7 @@ export const postEdit = async (req, res) => {
       return res.status(400).render("user/edit-profile", { pageTitle });
     }
   }
-  req.flash("info", "asdf");
+
   const updatedUser = await User.findByIdAndUpdate(
     _id,
     {
