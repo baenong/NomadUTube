@@ -162,13 +162,13 @@ export const search = async (req, res) => {
         hashtags: keyword,
       })
         .sort({ createdAt: "desc" })
-        .populate("owner", "name");
+        .populate("owner", ["name", "socialOnly", "avatarUrl"]);
     } else {
       videos = await Video.find({
         title: { $regex: new RegExp(keyword, "i") },
       })
         .sort({ createdAt: "desc" })
-        .populate("owner", "name");
+        .populate("owner", ["name", "socialOnly", "avatarUrl"]);
     }
   }
   return res.render("search", { pageTitle: "Search", videos });
