@@ -14,7 +14,7 @@ const isHeroku = process.env.NODE_ENV === "production";
 
 const s3ImageUploader = multerS3({
   s3: s3,
-  bucket: "utubestudy/images",
+  bucket: "utubestudy",
   acl: "public-read",
 });
 
