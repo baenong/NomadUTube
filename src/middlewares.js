@@ -67,7 +67,7 @@ export const uploadVideo = multer({
 });
 
 export const s3DeleteAvatarMiddleware = async (req, res, next) => {
-  const avatar = req.session.user.avatarURL;
+  const avatar = req.session.user.avatarUrl;
   console.log("avatar url : ", avatar);
   console.log(req.session.user);
 
