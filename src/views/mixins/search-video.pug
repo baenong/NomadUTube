@@ -14,7 +14,7 @@ mixin search-video(video)
                         span 😊
                     else 
                         span
-                            img(src=`${video.owner.socialOnly?"":"/"}` + video.owner.avatarUrl).video__uploader-avatar
+                            img(src=video.owner.avatarUrl).video__uploader-avatar
                     span #{video.owner.name}
             a(href=`/videos/${video._id}`).search-mixin__description
                 span #{video.description}
