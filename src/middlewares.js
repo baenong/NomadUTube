@@ -30,12 +30,13 @@ export const localsMiddleware = (req, res, next) => {
   res.locals.siteName = "UTube";
   res.locals.loggedInUser = req.session.user || {};
   res.locals.isHeroku = isHeroku;
-  next();
+  return next();
 };
 
 export const protectorMiddleware = (req, res, next) => {
   if (res.locals.loggedIn) {
-    next();
+    console.log("loggedIn");
+    return next();
   } else {
     req.flash("error", "Log in first.");
     return res.redirect("/login");
@@ -91,10 +92,12 @@ export const s3DeleteAvatarMiddleware = async (req, res, next) => {
     })
   );
 
-  next();
+  return next();
 };
 
 export const s3DeleteVideoMiddleware = async (req, res, next) => {
+  console.log("Delete Video Middleware!");
+
   const {
     params: { id },
   } = req;
@@ -108,7 +111,7 @@ export const s3DeleteVideoMiddleware = async (req, res, next) => {
   console.log("video : ", video);
 
   if (!video) {
-    next();
+    return next();
   }
 
   const videoUrl = video.fileUrl;
@@ -122,5 +125,5 @@ export const s3DeleteVideoMiddleware = async (req, res, next) => {
       Key: [s3SplitURL(videoUrl), s3SplitURL(thumbUrl)],
     })
   );
-  next();
+  return next();
 };

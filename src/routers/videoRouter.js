@@ -26,7 +26,8 @@ videoRouter
   .post(postEdit);
 videoRouter
   .route("/:id([0-9a-f]{24})/delete")
-  .all(protectorMiddleware, s3DeleteVideoMiddleware)
+  .all(protectorMiddleware)
+  .use(s3DeleteVideoMiddleware)
   .get(getDelete);
 videoRouter
   .route("/upload")
