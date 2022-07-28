@@ -35,7 +35,6 @@ export const localsMiddleware = (req, res, next) => {
 
 export const protectorMiddleware = (req, res, next) => {
   if (res.locals.loggedIn) {
-    console.log("loggedIn");
     return next();
   } else {
     req.flash("error", "Log in first.");
@@ -68,8 +67,15 @@ export const uploadVideo = multer({
   storage: isHeroku ? s3VideoUploader : undefined,
 });
 
-const s3SplitURL = (url) => {
-  return url.split("/")[3];
+const s3SDeleteObject = async (url) => {
+  const targetUrl = url.split("/")[3];
+
+  await s3.send(
+    new DeleteObjectCommand({
+      Bucket: "utubestudy",
+      Key: s3SplitURL(targetUrl),
+    })
+  );
 };
 
 export const s3DeleteAvatarMiddleware = async (req, res, next) => {
@@ -85,12 +91,7 @@ export const s3DeleteAvatarMiddleware = async (req, res, next) => {
     return next();
   }
 
-  const response = await s3.send(
-    new DeleteObjectCommand({
-      Bucket: "utubestudy",
-      Key: s3SplitURL(avatar),
-    })
-  );
+  await s3SDeleteObject(avatar);
 
   return next();
 };
@@ -109,21 +110,8 @@ export const s3DeleteVideoMiddleware = async (req, res, next) => {
   const videoUrl = video.fileUrl;
   const thumbUrl = video.thumbUrl;
 
-  console.log("URL : ", videoUrl, thumbUrl);
-
-  const response = await s3.send(
-    new DeleteObjectCommand({
-      Bucket: "utubestudy",
-      Key: s3SplitURL(videoUrl),
-    })
-  );
-
-  await s3.send(
-    new DeleteObjectCommand({
-      Bucket: "utubestudy",
-      Key: s3SplitURL(thumbUrl),
-    })
-  );
+  await s3SDeleteObject(videoUrl);
+  await s3SDeleteObject(thumbUrl);
 
   return next();
 };
