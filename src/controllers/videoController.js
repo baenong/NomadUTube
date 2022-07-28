@@ -119,6 +119,8 @@ export const postUpload = async (req, res) => {
     user.videos.push(newVideo._id);
     user.save();
 
+    req.flash("success", "Success Upload Video");
+
     return res.redirect("/");
   } catch (error) {
     req.flash("error", error._message);
@@ -149,6 +151,7 @@ export const getDelete = async (req, res) => {
   user.videos.splice(user.videos.indexOf(id), 1);
   user.save();
 
+  req.flash("success", "Success Delete Video");
   return res.redirect("/");
 };
 
@@ -245,6 +248,6 @@ export const deleteComment = async (req, res) => {
   video.comments.splice(video.comments.indexOf(id), 1);
   video.save();
 
-  req.flash("info", "Delete Success");
+  req.flash("success", "Delete Comment Success");
   return res.redirect(`/videos/${video._id}`);
 };

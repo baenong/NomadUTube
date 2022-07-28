@@ -114,9 +114,14 @@ export const s3DeleteVideoMiddleware = async (req, res, next) => {
   const response = await s3.send(
     new DeleteObjectCommand({
       Bucket: "utubestudy",
-      Delete: {
-        Objects: [{ Key: s3SplitURL(videoUrl) }, { Key: s3SplitURL(thumbUrl) }],
-      },
+      Key: s3SplitURL(videoUrl),
+    })
+  );
+
+  await s3.send(
+    new DeleteObjectCommand({
+      Bucket: "utubestudy",
+      Key: s3SplitURL(thumbUrl),
     })
   );
 
