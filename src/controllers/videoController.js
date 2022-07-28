@@ -157,7 +157,7 @@ export const search = async (req, res) => {
   let videos = [];
   if (keyword) {
     // Search
-    if (keyword.charAt(0) === "#") {
+    if (keyword.startsWith("#")) {
       videos = await Video.find({
         hashtags: keyword,
       })
