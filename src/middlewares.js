@@ -96,15 +96,9 @@ export const s3DeleteAvatarMiddleware = async (req, res, next) => {
 };
 
 export const s3DeleteVideoMiddleware = async (req, res, next) => {
-  console.log("Delete Video Middleware!");
-
   const {
     params: { id },
   } = req;
-
-  if (!req.file) {
-    return next();
-  }
 
   const video = await Video.findById(id);
 
