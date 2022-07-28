@@ -38,7 +38,7 @@ block content
                         span 😊
                     else 
                         span
-                            img(src=`${owner.socialOnly?"":"/"}` + owner.avatarUrl).video__uploader-avatar
+                            img(src=owner.avatarUrl).video__uploader-avatar
                     span #{owner.name}
             ul#video__description__hashtags
                 each hashtag in video.hashtags

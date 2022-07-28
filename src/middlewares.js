@@ -105,6 +105,8 @@ export const s3DeleteVideoMiddleware = async (req, res, next) => {
 
   const video = await Video.findById(id);
 
+  console.log("video : ", video);
+
   if (!video) {
     next();
   }
