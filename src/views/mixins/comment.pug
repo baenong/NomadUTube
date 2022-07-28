@@ -6,7 +6,7 @@ mixin comment(comment)
                     span 😊
                 else 
                     span
-                        img(src=`${comment.owner.socialOnly?"":"/"}` + comment.owner.avatarUrl)
+                        img(src=comment.owner.avatarUrl)
         div.comment-mixin__data
             div.comment-mixin__header
                 span #{comment.owner.name}
