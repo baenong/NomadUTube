@@ -73,7 +73,7 @@ const s3SDeleteObject = async (url) => {
   await s3.send(
     new DeleteObjectCommand({
       Bucket: "utubestudy",
-      Key: s3SplitURL(targetUrl),
+      Key: targetUrl,
     })
   );
 };
