@@ -4,11 +4,13 @@ block content
     if errorMessage 
         span=errorMessage
     if loggedInUser.avatarUrl
-        img(src=`${loggedInUser.socialOnly?"":"/"}` + loggedInUser.avatarUrl).avatar
-        h3=loggedInUser.name
+        div.edit-profile__info
+            img(src=loggedInUser.avatarUrl).avatar
+            h3=loggedInUser.name
     form(method="POST", enctype="multipart/form-data").edit-profile__form
-        label(for="avatar") Avatar
-        input(type="file", id="avatar", name="avatar", accept="image/*")
+        if !loggedInUser.socialOnly
+            label(for="avatar") Avatar
+            input(type="file", id="avatar", name="avatar", accept="image/*")
         input(placeholder="Name", type="text", required, name="name" value=loggedInUser.name)
         input(placeholder="Username", type="text", required, name="username" value=loggedInUser.username)
         input(placeholder="Email", type="email", required, name="email" value=loggedInUser.email)

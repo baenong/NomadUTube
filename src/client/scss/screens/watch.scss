@@ -95,17 +95,18 @@
       font-size: 16px;
       font-weight: 100;
       border: 0;
+      cursor: pointer;
     }
   }
 }
 
 .comment-mixin__container {
   margin: 20px 0;
+  width: 100%;
   display: flex;
   align-items: flex-start;
 
   .comment-mixin__avatar {
-    margin-right: 15px;
     img {
       width: 40px;
       height: 40px;
@@ -115,7 +116,10 @@
   }
 
   .comment-mixin__data {
+    max-width: calc(100% - 40px);
     vertical-align: middle;
+    flex-grow: 1;
+    margin: 0px 15px;
     .comment-mixin__header {
       margin-bottom: 2px;
       span:first-child {
@@ -130,7 +134,7 @@
     .comment-mixin__text {
       font-size: 16px;
       font-weight: 300;
-      width: 1145px;
+      width: 95%;
       p {
         white-space: pre-wrap;
         word-wrap: break-word;

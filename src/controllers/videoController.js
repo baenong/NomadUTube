@@ -109,8 +109,8 @@ export const postUpload = async (req, res) => {
     const newVideo = await Video.create({
       title,
       description,
-      fileUrl: video[0].path,
-      thumbUrl: thumb[0].filename,
+      fileUrl: res.locals.isHeroku ? video[0].location : video[0].path,
+      thumbUrl: res.locals.isHeroku ? thumb[0].location : video[0].path,
       owner: _id,
       hashtags: Video.formatHashtags(hashtags),
     });
@@ -118,6 +118,8 @@ export const postUpload = async (req, res) => {
     const user = await User.findById(_id);
     user.videos.push(newVideo._id);
     user.save();
+
+    req.flash("success", "Success Upload Video");
 
     return res.redirect("/");
   } catch (error) {
@@ -149,6 +151,7 @@ export const getDelete = async (req, res) => {
   user.videos.splice(user.videos.indexOf(id), 1);
   user.save();
 
+  req.flash("success", "Success Delete Video");
   return res.redirect("/");
 };
 
@@ -157,11 +160,19 @@ export const search = async (req, res) => {
   let videos = [];
   if (keyword) {
     // Search
-    videos = await Video.find({
-      title: { $regex: new RegExp(keyword, "i") },
-    })
-      .sort({ createdAt: "desc" })
-      .populate("owner", "name");
+    if (keyword.startsWith("#")) {
+      videos = await Video.find({
+        hashtags: keyword,
+      })
+        .sort({ createdAt: "desc" })
+        .populate("owner", ["name", "socialOnly", "avatarUrl"]);
+    } else {
+      videos = await Video.find({
+        title: { $regex: new RegExp(keyword, "i") },
+      })
+        .sort({ createdAt: "desc" })
+        .populate("owner", ["name", "socialOnly", "avatarUrl"]);
+    }
   }
   return res.render("search", { pageTitle: "Search", videos });
 };
@@ -237,6 +248,6 @@ export const deleteComment = async (req, res) => {
   video.comments.splice(video.comments.indexOf(id), 1);
   video.save();
 
-  req.flash("info", "Delete Success");
+  req.flash("success", "Delete Comment Success");
   return res.redirect(`/videos/${video._id}`);
 };

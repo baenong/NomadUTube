@@ -3,7 +3,7 @@ include mixins/comment
 
 block content
     div#videoContainer(data-id=video._id)
-        video(src="/" + video.fileUrl)
+        video(src=video.fileUrl)
         div#videoControls
             input(type="range", step="1", value=0, min="0")#timeline
             div.videoControls__container
@@ -25,8 +25,9 @@ block content
         div#videoMeta
             ul#videoMeta__hashtags
                 each hashtag, index in video.hashtags
-                    if index < 2
-                        li=hashtag
+                    if index < 3
+                        li.hashtag
+                            a(href=`/search?keyword=%23${hashtag.substr(1)}`)=hashtag
             h1 #{video.title}
             span #{video.meta.views} #{video.meta.views === 1 ? "view" : "views"} ·
             span #{video.createdAt.getFullYear()}. #{video.createdAt.getMonth()}. #{video.createdAt.getDate()}.
@@ -37,11 +38,12 @@ block content
                         span 😊
                     else 
                         span
-                            img(src=`${owner.socialOnly?"":"/"}` + owner.avatarUrl).video__uploader-avatar
+                            img(src=owner.avatarUrl).video__uploader-avatar
                     span #{owner.name}
             ul#video__description__hashtags
                 each hashtag in video.hashtags
-                    li=hashtag
+                    li.hashtag
+                            a(href=`/search?keyword=%23${hashtag.substr(1)}`)=hashtag
             p=video.description
         div#video__edit
             if String(video.owner) === String(loggedInUser._id)

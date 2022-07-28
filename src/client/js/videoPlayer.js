@@ -82,9 +82,11 @@ const formatTime = (seconds) => {
 };
 
 const handleLoadedMetadata = () => {
-  const duration = Math.floor(video.duration);
-  totalTime.innerText = formatTime(duration);
-  timeline.max = duration;
+  if (!isNaN(video.duration)) {
+    const duration = Math.floor(video.duration);
+    totalTime.innerText = formatTime(duration);
+    timeline.max = duration;
+  }
 };
 
 const handleTimeUpdate = (event) => {
@@ -163,7 +165,8 @@ const handleEnded = () => {
 video.addEventListener("pause", handleVideoPause);
 video.addEventListener("play", handleVideoPlay);
 video.addEventListener("click", handlePlay);
-video.addEventListener("loadedmetadata", handleLoadedMetadata);
+video.addEventListener("canplay", handleLoadedMetadata);
+handleLoadedMetadata();
 video.addEventListener("timeupdate", handleTimeUpdate);
 video.addEventListener("ended", handleEnded);
 document.addEventListener("keydown", handleKeyboardDown);

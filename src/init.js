@@ -8,7 +8,7 @@ import "./models/Comment";
 import "./models/Reply";
 import app from "./server";
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 // Listening Request
 const handleListening = () => {
